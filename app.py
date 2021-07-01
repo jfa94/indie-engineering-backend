@@ -5,9 +5,11 @@ from marshmallow import ValidationError
 import os
 
 from conf import db, ma
+from blocklist import get_blocklist
 from resource.auth import UserRegister, UserLogin, UserLogout, TokenRefresh
 from resource.user import UserData
-from blocklist import get_blocklist
+from resource.course import Course
+from resource.curriculum import EditCurriculum, Curriculum
 
 app = Flask(__name__)
 app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("DATABASE_URI")
@@ -48,6 +50,13 @@ api.add_resource(UserLogout, "/logout")
 # User data resources
 api.add_resource(UserData, "/user")
 
+# Course resources
+api.add_resource(Course, "/course", "/course/<int:_id>")
+
+# Curriculum resources
+# TODO: Comment out EditCurriculum ahead of deployment
+api.add_resource(EditCurriculum, "/edit-curriculum")
+api.add_resource(Curriculum, "/curriculum")
 
 if __name__ == '__main__':
     app.run(port=5000)

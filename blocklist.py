@@ -29,9 +29,10 @@ class BlockedJWTSchema(ma.SQLAlchemyAutoSchema):
         load_instance = True
 
 
-def get_blocklist():
+def get_blocklist() -> List[str]:
     blocklist_schema = BlockedJWTSchema(many=True)
-    return blocklist_schema.dump(BlockedJWTModel.find_all())
+    blocklist = blocklist_schema.dump(BlockedJWTModel.find_all())
+    return [blocked["jti"] for blocked in blocklist]
 
 
 def add_to_blocklist(jti: str) -> None:

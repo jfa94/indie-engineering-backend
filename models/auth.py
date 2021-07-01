@@ -1,6 +1,8 @@
 from conf import db
 from models.user import UserModel
 
+permission_enum = ('super', 'admin', 'user', 'read')
+
 
 class AuthModel(db.Model):
     __tablename__ = 'authentication'
@@ -8,9 +10,10 @@ class AuthModel(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(254), nullable=False, unique=True)
     password = db.Column(db.String(80), nullable=False)
-    permissions = db.Column(db.String(12), default='user')
+    permissions = db.Column(db.Enum(*permission_enum), default='user')
+    active = db.Column(db.Enum('true', 'false'), default='true')
 
-    user_data = db.relationship('UserModel', uselist=False, cascade="all, delete")
+    user_data = db.relationship('UserModel', uselist=False, backref='auth', cascade='all, delete')
 
     @classmethod
     def find_by_email(cls, email: str) -> "AuthModel":
