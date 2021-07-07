@@ -41,7 +41,6 @@ class UserRegister(Resource):
     def delete(cls) -> Tuple[Dict, int]:
         user_id = get_jwt_identity()
 
-        # TODO: Fix bug with authentication (note: below does not work to log user out)
         jti = get_jwt()["jti"]
         add_to_blocklist(jti)
 
