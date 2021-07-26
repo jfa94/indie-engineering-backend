@@ -2,6 +2,7 @@ from flask import Flask, jsonify
 from flask_jwt_extended import JWTManager
 from flask_restful import Api
 from marshmallow import ValidationError
+from dotenv import load_dotenv
 import os
 
 from conf import db, ma
@@ -10,6 +11,8 @@ from resource.auth import UserRegister, UserLogin, UserLogout, TokenRefresh
 from resource.user import UserData
 from resource.course import Course
 from resource.curriculum import EditCurriculum, Curriculum
+
+load_dotenv()
 
 app = Flask(__name__)
 app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("DATABASE_URI")
