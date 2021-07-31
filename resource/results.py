@@ -15,63 +15,50 @@ UPDATED_SUCCESSFULLY = "Results updated successfully."
 DELETED_SUCCESSFULLY = "Results deleted successfully."
 RESULTS_NOT_FOUND = "Unable to locate results."
 
-results_schema = resultsSchema()
+results_schema = ResultsSchema()
+results_list_schema = ResultsSchema(many=True)
 
 
 class ResultsData(Resource):
     @classmethod
-    @jwt_required(fresh=True)
-    def post(cls) -> Tuple[Dict, int]:
+    @jwt_required()
+    def post(cls, _id: str) -> Tuple[Dict, int]:
         results_json = request.get_json()
-        results_json["id"] = get_jwt_identity()
+        results_json["course_id"] = int(_id)
+
+        user_id = get_jwt_identity()
+        current_user = AuthModel.find_by_id(user_id)
+        results_json["user_email"] = current_user.email
+
         results = results_schema.load(results_json, session=db.session)
-
-        if resultsModel.find_by_id(results.id):
-            return {"message": results_ALREADY_EXISTS}, 400
-
         results.save_to_db()
 
         return {"message": CREATED_SUCCESSFULLY}, 201
 
     @classmethod
-    @jwt_required(fresh=True)
-    def patch(cls) -> Tuple[Dict, int]:
-        results_id = get_jwt_identity()
-        results = resultsModel.find_by_id(results_id)
-
-        if results:
-            update_json = request.get_json()
-            results_json = results_schema.dump(results)
-
-            for field in update_json:
-                results_json[field] = update_json[field]
-
-            results = results_schema.load(results_json, session=db.session)
-            results.save_to_db()
-
-            return results_schema.dump(results), 200  # Update to only send a success message?
-
-        return {"message": results_NOT_FOUND}, 404
+    @jwt_required()
+    def get(cls, _id: str) -> Tuple[Dict, int]:
+        results = ResultsModel.find_by_id(_id)
+        return results_schema.dump(results), 200
 
     @classmethod
     @jwt_required()
-    def get(cls) -> Tuple[Dict, int]:
-        results_id = get_jwt_identity()
-        results = resultsModel.find_by_id(results_id)
+    def delete(cls, _id: str) -> Tuple[Dict, int]:
+        results = ResultsModel.find_by_id(_id)
+        results.delete_from_db()
+        return {"message": DELETED_SUCCESSFULLY}, 410
 
-        if results:
-            return results_schema.dump(results), 200
 
-        return {"message": results_NOT_FOUND}, 404
-
+class ResultsList(Resource):
     @classmethod
-    @jwt_required(fresh=True)
-    def delete(cls) -> Tuple[Dict, int]:
-        results_id = get_jwt_identity()
-        results = resultsModel.find_by_id(results_id)
+    @jwt_required()
+    def get(cls) -> Tuple[Dict, int]:
+        user_id = get_jwt_identity()
+        current_user = AuthModel.find_by_id(user_id)
+
+        results = ResultsModel.find_by_email(current_user.email)
 
         if results:
-            results.delete_from_db()
-            return {"message": DELETED_SUCCESSFULLY}, 410
+            return results_list_schema.dump(results), 200
 
-        return {"message": results_NOT_FOUND}, 404
+        return {"message": RESULTS_NOT_FOUND}, 404

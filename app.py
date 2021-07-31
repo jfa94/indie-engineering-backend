@@ -8,6 +8,8 @@ import os
 from conf import db, ma
 from blocklist import get_blocklist
 from resource.auth import UserRegister, UserLogin, UserLogout, TokenRefresh
+from resource.results import ResultsData, ResultsList
+from resource.enrolment import EnrolmentData, EnrolmentList
 from resource.user import UserData
 from resource.course import Course
 from resource.curriculum import EditCurriculum, Curriculum
@@ -60,6 +62,15 @@ api.add_resource(Course, "/course", "/course/<int:_id>")
 # TODO: Comment out EditCurriculum ahead of deployment
 api.add_resource(EditCurriculum, "/edit-curriculum")
 api.add_resource(Curriculum, "/curriculum")
+
+# Results resources
+api.add_resource(ResultsData, "/result/<int:_id>")
+api.add_resource(ResultsList, "/results")
+
+# Enrolment resources
+api.add_resource(EnrolmentData, "/enrolment/<int:_id>")
+api.add_resource(EnrolmentList, "/enrolment_list")
+
 
 if __name__ == '__main__':
     app.run(port=5000)

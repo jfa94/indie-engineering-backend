@@ -1,8 +1,9 @@
 from conf import ma
-from models.resource import ResourceModel
+from models.results import ResultsModel
 
 
-class ResourceSchema(ma.SQLAlchemyAutoSchema):
+class ResultsSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
-        model = ResourceModel
+        model = ResultsModel
         load_instance = True
+        include_fk = True
