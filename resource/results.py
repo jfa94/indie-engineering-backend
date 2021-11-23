@@ -14,6 +14,7 @@ CREATED_SUCCESSFULLY = "Results created successfully."
 UPDATED_SUCCESSFULLY = "Results updated successfully."
 DELETED_SUCCESSFULLY = "Results deleted successfully."
 RESULTS_NOT_FOUND = "Unable to locate results."
+USER_NOT_FOUND = "User identity not recognised."
 
 results_schema = ResultsSchema()
 results_list_schema = ResultsSchema(many=True)
@@ -27,13 +28,17 @@ class ResultsData(Resource):
         results_json["course_id"] = int(_id)
 
         user_id = get_jwt_identity()
-        current_user = AuthModel.find_by_id(user_id)
-        results_json["user_email"] = current_user.email
+        user = AuthModel.find_by_id(user_id)
 
-        results = results_schema.load(results_json, session=db.session)
-        results.save_to_db()
+        if user:
+            results_json["user_id"] = user_id
 
-        return {"message": CREATED_SUCCESSFULLY}, 201
+            results = results_schema.load(results_json, session=db.session)
+            results.save_to_db()
+
+            return {"message": CREATED_SUCCESSFULLY}, 201
+
+        return {"message": USER_NOT_FOUND}, 404
 
     @classmethod
     @jwt_required()

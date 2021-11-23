@@ -7,7 +7,7 @@ class CourseModel(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64), nullable=False)
     institution = db.Column(db.String(64))
-    version = db.Column(db.Integer)
+    version = db.Column(db.Float)
 
     @classmethod
     def find_by_id(cls, _id: int) -> "CourseModel":
