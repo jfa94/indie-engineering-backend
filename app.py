@@ -9,10 +9,8 @@ from conf import db, ma
 from blocklist import get_blocklist
 from resource.auth import UserRegister, UserLogin, UserLogout, TokenRefresh
 from resource.results import ResultsData, ResultsList
-from resource.enrolment import EnrolmentData, EnrolmentList
 from resource.user import UserData
 from resource.course import Course
-from resource.curriculum import EditCurriculum, Curriculum
 
 load_dotenv()
 
@@ -47,6 +45,7 @@ def check_if_token_in_blacklist(jwt_header, jwt_data):
 
 
 # Authentication resources
+# NOTE: passwords are stored as-received, ensure hashed before posting
 api.add_resource(UserRegister, "/register")
 api.add_resource(UserLogin, "/login")
 api.add_resource(TokenRefresh, "/refresh")
@@ -58,18 +57,9 @@ api.add_resource(UserData, "/user")
 # Course resources
 api.add_resource(Course, "/course", "/course/<int:_id>")
 
-# Curriculum resources
-# TODO: Comment out EditCurriculum ahead of deployment
-api.add_resource(EditCurriculum, "/edit-curriculum")
-api.add_resource(Curriculum, "/curriculum")
-
 # Results resources
 api.add_resource(ResultsData, "/result/<int:_id>")
 api.add_resource(ResultsList, "/results")
-
-# Enrolment resources
-api.add_resource(EnrolmentData, "/enrolment/<int:_id>")
-api.add_resource(EnrolmentList, "/enrolment_list")
 
 
 if __name__ == '__main__':

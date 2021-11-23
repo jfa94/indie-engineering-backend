@@ -54,9 +54,7 @@ class ResultsList(Resource):
     @jwt_required()
     def get(cls) -> Tuple[Dict, int]:
         user_id = get_jwt_identity()
-        current_user = AuthModel.find_by_id(user_id)
-
-        results = ResultsModel.find_by_email(current_user.email)
+        results = ResultsModel.find_by_user_id(user_id)
 
         if results:
             return results_list_schema.dump(results), 200
